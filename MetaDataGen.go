@@ -6,18 +6,18 @@ type MetaData struct {
 	Files      []FileMetaData `json:"files"`
 }
 type FileMetaData struct {
-	Id          int             `json:"id"`
+	Id          string          `json:"id"`
 	FileName    string          `json:"FileName"`
-	TotalSize   int             `json:"TotalSize"`
-	NumOfChunks int             `json:"NumOfChunks"`
+	TotalSize   string          `json:"TotalSize"`
+	NumOfChunks int64           `json:"NumOfChunks"`
 	Key         []byte          `json:"Key"`
 	Chunks      []ChunkMetaData `json:"Chunks"`
-	CretedAt    string          `json:"CretedAt"`
+	CreatedAt   string          `json:"CreatedAt"`
 }
 
 type ChunkMetaData struct {
 	ChunkName string `json:"ChunkName"`
-	ChunkSize int    `json:"ChunkSize"`
+	ChunkSize string `json:"ChunkSize"`
 }
 
 func (x FileMetaData) GetNumOfChunks() int {

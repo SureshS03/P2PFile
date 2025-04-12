@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
+	"strings"
+	"time"
 
 	//"crypto/sha256"
 	"fmt"
@@ -14,19 +16,19 @@ import (
 
 func main() {
 	//splitFile("test.mp4")
-	metadata, err := getMetaData("MetaData.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(metadata)
-	if metadata.Mail == "" {
-		metadata.Mail, err = SignUp()
-		if err != nil {
-			return
-		}
-		err = JsonWriter("MetaData.json", metadata)
-		if err != nil {
-			return
+	args := os.Args
+	fmt.Println(args[1])
+	switch args[1] {
+	case "add":
+		if len(args) < 3 {
+			fmt.Println("Bro Need File: add <filename>")
+			break
+		} else {
+			err := splitFile(args[2])
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
 
@@ -60,37 +62,70 @@ func main() {
 	*/
 }
 
-func splitFile(path string) {
+func splitFile(path string) error {
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return errors.New(fmt.Sprintf("Bro cant open file %s", err))
 	}
 	defer file.Close()
 
 	info, err := file.Stat()
 	if err != nil {
 		fmt.Println(err)
-		return
+		return errors.New(fmt.Sprintf("Bro cant access file %s", err))
 	}
 
-	fileNamer := info.Name()
+	metadata, err := getMetaData("MetaData.json")
+	if err != nil {
+		fmt.Println(err)
+		return errors.New(fmt.Sprintf("Bro cant access MetaData File %s", err))
+	}
+
+	if metadata.Mail == "" {
+		mail, err := SignUp()
+		if err != nil {
+			return errors.New(fmt.Sprintf("Bro cant sign Up %s", err))
+		}
+		fmt.Println("Mail added", mail)
+	}
+
+	NumOfFile := metadata.NumOfFiles
+
+	fileName := info.Name()
 	fileSize := info.Size()
-	fmt.Println("name and size", fileNamer, fileSize)
+	fmt.Println("name and size", fileName, fileSize)
 
 	const chunkSize = 1024 * 1024 * 20 // 1024 * 1024 is 1 mb so 20 mb
 
 	needChunks := (fileSize + chunkSize - 1) / chunkSize
 	buffer := make([]byte, chunkSize)
 
+	chunks := []ChunkMetaData{}
+	fileID := fmt.Sprintf("%dchu%v", fileName, fileSize)
+	r, err := FileAlreadyExits(&metadata, &fileID)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if r == 2 {
+		return errors.New("STOPPED...file Already Exit")
+	}
+	if r == 1 {
+		fmt.Println("Doing Again...")
+		p := &fileID
+		*p = fmt.Sprintf("%dchuCOPY%v", fileName, fileSize)
+	}
+
 	defaultName := filepath.Base(path)
 	fileExt := filepath.Ext(path)
 	Name := defaultName[:len(defaultName)-len(fileExt)]
 
 	fmt.Println(Name, fileExt)
-	gcm, err, _ := makeKey()
+	gcm, err, key := makeKey()
 	if err != nil {
 		fmt.Println(err)
+		return errors.New(fmt.Sprintf("Bro cant make key %s", err))
 	}
 
 	for i := int64(0); i < needChunks; i++ {
@@ -99,12 +134,12 @@ func splitFile(path string) {
 		_, err := file.Seek(i*chunkSize, 0)
 		if err != nil {
 			fmt.Println(err)
-			return
+			return errors.New(fmt.Sprint("Bro, cant seek into the file:", err))
 		}
 		ReadedBytes, err := file.Read(buffer)
 		if err != nil && err != io.EOF {
 			fmt.Println(err)
-			return
+			return errors.New(fmt.Sprint("Bro, cant read the file:", err))
 		}
 		fmt.Println(ReadedBytes/1024/1024, "MB")
 		//fmt.Println(string(buffer[:ReadedBytes]))
@@ -116,16 +151,38 @@ func splitFile(path string) {
 		partFile, err := os.Create(fileNamer)
 		if err != nil {
 			fmt.Println(err)
-			return
+			return errors.New(fmt.Sprint("Bro, cant create the file chunks:", err))
 		}
 		_, err = partFile.Write(text)
 		if err != nil {
 			partFile.Close()
 			fmt.Println(err)
-			return
+			return errors.New(fmt.Sprint("Bro, cant write the file chunks:", err))
 		}
 		partFile.Close()
+		chunks = append(chunks, ChunkMetaData{
+			ChunkName: fileNamer,
+			ChunkSize: fmt.Sprintf("%d MB", ReadedBytes/1024/1024),
+		})
 	}
+	metadata.NumOfFiles = NumOfFile + 1
+	filemetadata := FileMetaData{
+		Id:          fileID,
+		FileName:    fileName,
+		TotalSize:   fmt.Sprintf("%d MB", fileSize/1024/1024),
+		NumOfChunks: needChunks,
+		Key:         key,
+		Chunks:      chunks,
+		CreatedAt:   time.Now().Format("2006-01-02 15:04:05"),
+	}
+	metadata.Files = append(metadata.Files, filemetadata)
+	err = JsonWriter("MetaData.json", metadata)
+	if err != nil {
+		fmt.Println("Bro cant add Metadata details:", err)
+		fmt.Println(err)
+	}
+	fmt.Println("File encrypted successfully\nUse push command to push the files")
+	return nil
 }
 
 func getMetaData(path string) (MetaData, error) {
@@ -138,6 +195,22 @@ func getMetaData(path string) (MetaData, error) {
 	err = json.Unmarshal(data, &metaData)
 	if err != nil {
 		fmt.Println(err)
+	}
+	if err != nil {
+		fmt.Println(err)
+	}
+	//fmt.Println(metadata)
+	if metaData.Mail == "" {
+		metaData.Mail, err = SignUp()
+		if err != nil {
+			fmt.Println(err)
+			return MetaData{}, err
+		}
+		err = JsonWriter("MetaData.json", metaData)
+		if err != nil {
+			fmt.Println(err)
+			return MetaData{}, err
+		}
 	}
 	return metaData, nil
 	/*
@@ -154,17 +227,24 @@ func SignUp() (string, error) {
 	fmt.Println("Enter Your Email :")
 	var email string
 	_, err := fmt.Scanln(&email)
+	fmt.Println("mail is", email)
 	if err != nil {
+		fmt.Println("in scan", err)
 		return "", err
 	}
 	fmt.Println("Email :", email)
-	if email == "" {
+	if len(email) == 0 {
 		return "", errors.New("bro, Its empty")
 	}
-	for i := 0; i < len(email); i++ {
-		if email[i] != '@' {
-			return "", errors.New("bro, Its don't Have '@' in it")
+	if !strings.Contains(email, "@") {
+		return "", errors.New("bro, Its dont have @ in it")
+	} else if !strings.Contains(email, ".") {
+		return "", errors.New("bro, Its not an vaild email")
+	} else {
+		err := JsonWriter("MetaData.json", MetaData{})
+		if err != nil {
+			return "", err
 		}
+		return email, nil
 	}
-	return email, nil
 }

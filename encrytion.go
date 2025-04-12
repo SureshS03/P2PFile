@@ -41,7 +41,6 @@ func makeEnc(gcm cipher.AEAD, textbytes []byte) []byte {
 	encText := gcm.Seal(nonce, nonce, textbytes, nil)
 	//fmt.Println("encText", encText)
 	//hexEnc := hex.EncodeToString(encText)
-	fmt.Println("---------------------")
 	return encText
 }
 
