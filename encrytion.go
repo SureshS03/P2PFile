@@ -17,7 +17,6 @@ func makeKey() (cipher.AEAD, error, []byte) {
 		fmt.Println("error generating key", err)
 		return nil, err, key
 	}
-	fmt.Printf("key generated %x\n", key)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		fmt.Println("error creating aes block cipher", err)

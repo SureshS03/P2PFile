@@ -1,5 +1,58 @@
 {
- "mail": "suthamani51@gmail.com",
+ "mail": "testmail@gmail.com",
  "numOfFiles": 2,
- "files": []
+ "files": [
+  {
+   "id": "test.mp4chu69497353",
+   "FileName": "test.mp4",
+   "TotalSize": "66 MB",
+   "NumOfChunks": 4,
+   "Key": "H3j2IhK3mYTv0Yo/Q1bJ63H1fxafuDGypYNxDRj8vXk=",
+   "Chunks": [
+    {
+     "ChunkName": "test_part0.chu",
+     "ChunkSize": "20 MB"
+    },
+    {
+     "ChunkName": "test_part1.chu",
+     "ChunkSize": "20 MB"
+    },
+    {
+     "ChunkName": "test_part2.chu",
+     "ChunkSize": "20 MB"
+    },
+    {
+     "ChunkName": "test_part3.chu",
+     "ChunkSize": "6 MB"
+    }
+   ],
+   "CreatedAt": "2025-04-18 20:00:27"
+  },
+  {
+   "id": "test.mp4chuCOPY69497353",
+   "FileName": "test.mp4",
+   "TotalSize": "66 MB",
+   "NumOfChunks": 4,
+   "Key": "CNmie1AkCd9q6hPkqCCnH5IRxnU0HW/x1A3jkYRSoI8=",
+   "Chunks": [
+    {
+     "ChunkName": "test_part0.chu",
+     "ChunkSize": "20 MB"
+    },
+    {
+     "ChunkName": "test_part1.chu",
+     "ChunkSize": "20 MB"
+    },
+    {
+     "ChunkName": "test_part2.chu",
+     "ChunkSize": "20 MB"
+    },
+    {
+     "ChunkName": "test_part3.chu",
+     "ChunkSize": "6 MB"
+    }
+   ],
+   "CreatedAt": "2025-04-18 20:00:33"
+  }
+ ]
 }
