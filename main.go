@@ -27,7 +27,18 @@ func main() {
 			fmt.Println("Bro Need FileID: push <fileID>")
 			break
 		} else {
-
+			//add sending mail function with to mail id
+		}
+	case "pull":
+		if len(args) < 3 {
+			fmt.Println("Bro Need FileID: pull <FileID>")
+			break
+		} else {
+			err := pullFile(args[2])
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
 

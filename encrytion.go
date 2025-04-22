@@ -10,24 +10,24 @@ import (
 	"os"
 )
 
-func makeKey() (cipher.AEAD, error, []byte) {
+func makeKey() (cipher.AEAD, []byte, error, ) {
 	key := make([]byte, 32)
 	_, err := rand.Reader.Read(key)
 	if err != nil {
 		fmt.Println("error generating key", err)
-		return nil, err, key
+		return nil, key, err
 	}
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		fmt.Println("error creating aes block cipher", err)
-		return nil, err, key
+		return nil, key, err
 	}
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
 		fmt.Println("error creating GCM cipher", err)
-		return nil, err, key
+		return nil, key, nil
 	}
-	return gcm, nil, key
+	return gcm, key, nil
 }
 
 func makeEnc(gcm cipher.AEAD, textbytes []byte) []byte {

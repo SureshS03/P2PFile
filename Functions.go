@@ -71,7 +71,7 @@ func addFile(path string) error {
 	Name := defaultName[:len(defaultName)-len(fileExt)]
 
 	//fmt.Println(Name, fileExt)
-	gcm, err, key := makeKey()
+	gcm, key, err := makeKey()
 	if err != nil {
 		fmt.Println(err)
 		return errors.New(fmt.Sprintf("Bro cant make key %s", err))
@@ -131,6 +131,22 @@ func addFile(path string) error {
 		fmt.Println(err)
 	}
 	fmt.Println("File encrypted successfully\nUse push command to push the files")
+	return nil
+}
+
+func pullFile(id string) error {
+	metadata, err := getMetaData("MetaData.json")
+	if err != nil {
+		fmt.Println("Cant Access MetaData Bro ",err)
+	}
+	var filemetadata FileMetaData
+	for i := 0; i < len(metadata.Files); i++ {
+		if (metadata.Files[i].Id == id) {
+			filemetadata = metadata.Files[i]
+		}
+	}
+	fmt.Println("Got the file",filemetadata.Id)
+
 	return nil
 }
 
