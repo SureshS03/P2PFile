@@ -24,10 +24,13 @@ func main() {
 		}
 	case "push":
 		if len(args) < 3 {
-			fmt.Println("Bro Need FileID: push <fileID>")
+			fmt.Println("Bro Need FileID: push <fileID> <To>")
+			break
+		} else if len(args) < 4{
+			fmt.Println("Bro Need To: push <fileID> <To>")
 			break
 		} else {
-			//add sending mail function with to mail id
+			pushFile(args[2], args[3])
 		}
 	case "pull":
 		if len(args) < 3 {

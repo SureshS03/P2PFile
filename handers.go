@@ -31,31 +31,39 @@ func FileAlreadyExits(data *MetaData, id *string) (int, error) {
 	return 0, nil
 }
 
-func SignUp() (string, error) {
+func SignUp() (string, string,error) {
 	//TODO add sign up msg
 	fmt.Println("Enter Your Email :")
 	var email string
 	_, err := fmt.Scanln(&email)
-	fmt.Println("mail is", email)
 	if err != nil {
 		fmt.Println("in scan", err)
-		return "", err
+		return "", "", err
 	}
 	fmt.Println("Email :", email)
+	fmt.Println("Enter Your Email Password :")
+	var pass string
+	x, err := fmt.Scanln(&pass)
+	fmt.Println("Length of the password is:",x)
+	if err != nil {
+		fmt.Println("in scan", err)
+		return "", "", err
+	}
+	fmt.Println("Password :", pass)
 	if len(email) == 0 {
-		return "", errors.New("bro, Its empty")
+		return "", "", errors.New("bro, Its empty")
 	}
 	if !strings.Contains(email, "@") {
-		return "", errors.New("bro, Its dont have @ in it")
+		return "", "", errors.New("bro, Its dont have @ in it")
 	} else if !strings.Contains(email, ".") {
-		return "", errors.New("bro, Its not an vaild email")
+		return "", "", errors.New("bro, Its not an vaild email")
 	} else {
 		err := JsonWriter("MetaData.json", MetaData{
 			NumOfFiles: 0,
 		})
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
-		return email, nil
+		return email, pass, nil
 	}
 }

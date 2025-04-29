@@ -42,8 +42,8 @@ func getMetaData(path string) (MetaData, error) {
 		fmt.Println(err)
 	}
 	//fmt.Println(metadata)
-	if metaData.Mail == "" {
-		metaData.Mail, err = SignUp()
+	if metaData.Mail == "" || metaData.Pass == "" {
+		metaData.Mail, metaData.Pass, err = SignUp()
 		if err != nil {
 			fmt.Println(err)
 			return MetaData{}, err

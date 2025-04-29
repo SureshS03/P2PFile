@@ -8,31 +8,32 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"net/smtp"
 )
 
 func addFile(path string) error {
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println(err)
-		return errors.New(fmt.Sprintf("Bro cant open file %s", err))
+		return fmt.Errorf("bro cant open file %s", err)
 	}
 	defer file.Close()
 
 	info, err := file.Stat()
 	if err != nil {
 		fmt.Println(err)
-		return errors.New(fmt.Sprintf("Bro cant access file %s", err))
+		return fmt.Errorf("bro cant access file %s", err)
 	}
 
 	metadata, err := getMetaData("MetaData.json")
 	if err != nil {
-		return errors.New(fmt.Sprintf("Bro cant access MetaData File %s", err))
+		return fmt.Errorf("bro cant access MetaData File %s", err)
 	}
 
-	if metadata.Mail == "" {
-		mail, err := SignUp()
+	if metadata.Mail == "" || metadata.Pass == "" {
+		mail, _, err := SignUp()
 		if err != nil {
-			return errors.New(fmt.Sprintf("Bro cant sign Up %s", err))
+			return fmt.Errorf("bro cant sign Up \n%s", err)
 		}
 		fmt.Println("Mail added", mail)
 	}
@@ -74,7 +75,7 @@ func addFile(path string) error {
 	gcm, key, err := makeKey()
 	if err != nil {
 		fmt.Println(err)
-		return errors.New(fmt.Sprintf("Bro cant make key %s", err))
+		return fmt.Errorf("bro cant make key %s", err)
 	}
 
 	for i := int64(0); i < needChunks; i++ {
@@ -137,7 +138,7 @@ func addFile(path string) error {
 func pullFile(id string) error {
 	metadata, err := getMetaData("MetaData.json")
 	if err != nil {
-		fmt.Println("Cant Access MetaData Bro ",err)
+		fmt.Println("Cant Access MetaData Bro", err)
 	}
 	var filemetadata FileMetaData
 	for i := 0; i < len(metadata.Files); i++ {
@@ -150,16 +151,45 @@ func pullFile(id string) error {
 	return nil
 }
 
-func pushFile(id string) error {
+func pushFile(id string, to string) error {
+	start := time.Now()
 	fmt.Println("Pushing file", id)
+	fmt.Println("to is",to)
 	metadata, err := getMetaData("MetaData.json")
 	if err != nil {
-		return errors.New(fmt.Sprintf("Bro cant access MetaData File %s", err))
+		return fmt.Errorf("bro cant access MetaData File %s", err)
 	}
 	err = isFileExits(&metadata, &id)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
+	err = sendMail(&id, &metadata, to)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Encoding and send took:", time.Since(start))
+	return nil
+}
+
+func sendMail(id *string, data *MetaData, to string) error {
+	fmt.Println(*id)
+	if data.Mail == "" {
+		SignUp()
+	}
+	fmt.Println(data.Mail,data.Pass)
+	var file FileMetaData
+	for i := 0; i < len(data.Files); i++ {
+		if data.Files[i].Id == *id {
+			file = data.Files[i]
+		}
+	}
+	auth := smtp.PlainAuth("", data.Mail, data.Pass, "smtp.gmail.com")
+	body := addMIME(file, data.Mail, to, file.Id)
+	err := smtp.SendMail("smtp.gmail.com:587", auth, data.Mail, []string{to}, body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("done")
 	return nil
 }

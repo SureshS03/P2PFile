@@ -2,6 +2,7 @@ package main
 
 type MetaData struct {
 	Mail       string         `json:"mail"`
+	Pass       string         `json:"password"`
 	NumOfFiles int            `json:"numOfFiles"`
 	Files      []FileMetaData `json:"files"`
 }
