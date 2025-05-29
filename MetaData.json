@@ -1,6 +1,37 @@
 {
  "mail": "sumaacc007@gmail.com",
  "password": "hqhj nucl ckrd xkrr ",
- "numOfFiles": 0,
- "files": []
+ "numOfFiles": 1,
+ "files": [
+  {
+   "id": "test3.mp4chu22420936",
+   "FileName": "test3.mp4",
+   "TotalSize": "21 MB",
+   "NumOfChunks": 5,
+   "Key": "4rSUP0rw4i4ve569moI2aKfB3hb7Jf9vjbUUlmeVARY=",
+   "Chunks": [
+    {
+     "ChunkName": "test3_part0.chu",
+     "ChunkSize": "5 MB"
+    },
+    {
+     "ChunkName": "test3_part1.chu",
+     "ChunkSize": "5 MB"
+    },
+    {
+     "ChunkName": "test3_part2.chu",
+     "ChunkSize": "5 MB"
+    },
+    {
+     "ChunkName": "test3_part3.chu",
+     "ChunkSize": "5 MB"
+    },
+    {
+     "ChunkName": "test3_part4.chu",
+     "ChunkSize": "1 MB"
+    }
+   ],
+   "CreatedAt": "2025-05-29 20:29:37"
+  }
+ ]
 }

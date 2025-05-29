@@ -4,7 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding/hex"
+	//"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -27,6 +27,7 @@ func makeKey() (cipher.AEAD, []byte, error, ) {
 		fmt.Println("error creating GCM cipher", err)
 		return nil, key, nil
 	}
+	fmt.Println("key is", len(key), "bytes long and is", key)
 	return gcm, key, nil
 }
 
@@ -49,7 +50,7 @@ func makeDec(key []byte, path string) []byte {
 		fmt.Println("error opening file", err)
 	}
 	defer file.Close()
-	const chunkSize = 1024 * 1024 * 20 // 1024 * 1024 is 1 mb so 20 mb
+	//const chunkSize = 1024 * 1024 * 20 // 1024 * 1024 is 1 mb so 20 mb
 
 	data, err := io.ReadAll(file)
 	if err != nil {
@@ -64,12 +65,8 @@ func makeDec(key []byte, path string) []byte {
 		fmt.Println("error creating GCM cipher", err)
 	}
 
-	hexDec, err := hex.DecodeString(string(data))
-	//fmt.Println("hexDec", hexDec)
-	if err != nil {
-		fmt.Println("error decoding hex", err)
-	}
-	decText, err := gcm.Open(nil, hexDec[:gcm.NonceSize()], hexDec[gcm.NonceSize():], nil)
+	
+	decText, err := gcm.Open(nil, data[:gcm.NonceSize()], data[gcm.NonceSize():], nil)
 	if err != nil {
 		fmt.Println("error decrypting text", err)
 	}

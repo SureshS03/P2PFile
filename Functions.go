@@ -2,13 +2,14 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
+	"net/smtp"
 	"os"
 	"path/filepath"
 	"time"
-	"net/smtp"
 )
 
 func addFile(path string) error {
@@ -44,7 +45,7 @@ func addFile(path string) error {
 	fileSize := info.Size()
 	//fmt.Println("name and size", fileName, fileSize)
 
-	const chunkSize = 1024 * 1024 * 20 // 1024 * 1024 is 1 mb so 20 mb
+	const chunkSize = 1024 * 1024 * 5 // 1024 * 1024 is 1 mb so 20 mb
 
 	needChunks := (fileSize + chunkSize - 1) / chunkSize
 	buffer := make([]byte, chunkSize)
@@ -135,7 +136,8 @@ func addFile(path string) error {
 	return nil
 }
 
-func pullFile(id string) error {
+// this will fetch the chuck file from the mail and decrypt it
+func pullFileFromMail(id string) error {
 	metadata, err := getMetaData("MetaData.json")
 	if err != nil {
 		fmt.Println("Cant Access MetaData Bro", err)
@@ -148,6 +150,41 @@ func pullFile(id string) error {
 	}
 	fmt.Println("Got the file",filemetadata.Id)
 
+	return nil
+}
+
+func pullFile(location string, key string) error {
+	fmt.Println("Pulling file from", location)
+	var crtKey []byte = make([]byte, 32)
+	decodedkey, err := base64.StdEncoding.DecodeString(key)
+	if err != nil {
+		fmt.Println("Bro, cant decode the key", err)
+		return fmt.Errorf("bro, cant decode the key %s", err)
+	}
+	copy(crtKey, decodedkey)
+	if len(crtKey) != 32 {
+		fmt.Println("Bro, key is not 32 bytes long")
+		return fmt.Errorf("bro, key is not 32 bytes long %d", len(crtKey))
+	}
+	var fileName string
+	fmt.Println("Enter the file name with correct extension to save the decrypted file:")
+	_, err = fmt.Scanf("%s", &fileName)
+	if err != nil {
+		fmt.Println("Bro, cant read the file name", err)
+		return fmt.Errorf("bro, cant read the file name %s", err)
+	}
+	dectxt := makeDec(crtKey, location)
+	file, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("Bro, cant create the file", err)
+		return fmt.Errorf("bro, cant create the file %s", err)
+	}
+	_, err = file.Write(dectxt)
+	if err != nil {
+		fmt.Println("Bro, cant write the file", err)
+		return fmt.Errorf("bro, cant write the file %s", err)
+	}
+	fmt.Println("File decrypted successfully")
 	return nil
 }
 

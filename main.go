@@ -37,7 +37,9 @@ func main() {
 			fmt.Println("Bro Need FileID: pull <FileID>")
 			break
 		} else {
-			err := pullFile(args[2])
+			fmt.Println("key in main", args[3], "and len", len(args[3]))
+			fmt.Printf("%T\n", args[3])
+			err := pullFile(args[2], args[3])
 			if err != nil {
 				fmt.Println(err)
 				return
