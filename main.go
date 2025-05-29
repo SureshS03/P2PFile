@@ -6,6 +6,10 @@ import (
 	"os"
 )
 
+//TODO: make mime mail send faster and auto fetch the mail by imap or something
+//method 1 is zip the chunks and send it
+// method 2 is send the chunks one by one not recommended tho
+
 func main() {
 	//splitFile("test.mp4")
 	args := os.Args
