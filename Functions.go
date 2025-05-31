@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"archive/zip"
 )
 
 func addFile(path string) error {
@@ -45,7 +46,7 @@ func addFile(path string) error {
 	fileSize := info.Size()
 	//fmt.Println("name and size", fileName, fileSize)
 
-	const chunkSize = 1024 * 1024 * 5 // 1024 * 1024 is 1 mb so 20 mb
+	const chunkSize = 1024 * 1024 * 20 // 1024 * 1024 is 1 mb so 20 mb
 
 	needChunks := (fileSize + chunkSize - 1) / chunkSize
 	buffer := make([]byte, chunkSize)
@@ -209,6 +210,48 @@ func pushFile(id string, to string) error {
 	return nil
 }
 
+func zipFile(fileData *FileMetaData) (error, *os.File) {
+	x := filepath.Base(fileData.FileName)
+	zipfile, err := os.Create(x + ".zip")
+	if err != nil {
+		fmt.Println("Bro, cant create the zip file", err)
+		return fmt.Errorf("bro, cant create the zip file %s", err), nil
+	}
+	zipWriter := zip.NewWriter(zipfile)
+	for _, chunk := range fileData.Chunks {
+		ftz, err := os.ReadFile(chunk.ChunkName)
+		if err != nil {
+			fmt.Println("Bro, Can'ts open the chuck file")
+			defer zipWriter.Close()
+			defer zipfile.Close()
+			return err, nil
+		}
+		zh := &zip.FileHeader{
+			Name: chunk.ChunkName,
+			Method: zip.Deflate,
+		}
+
+		wr, err := zipWriter.CreateHeader(zh)
+		if err != nil {
+			fmt.Println("error at creating header", err)
+			return err, nil
+		}
+		_, err = wr.Write(ftz)
+		if err != nil {
+			fmt.Println("error at write to zip file", err)
+			return err, nil
+		}
+	}
+	defer zipWriter.Close()
+	defer zipfile.Close()
+	final, err := os.Open(zipfile.Name())
+	if err != nil {
+		fmt.Println("error aty reopen file to send", err)
+		return err, nil
+	}
+	return nil, final
+}
+
 func sendMail(id *string, data *MetaData, to string) error {
 	fmt.Println(*id)
 	if data.Mail == "" {
@@ -221,9 +264,15 @@ func sendMail(id *string, data *MetaData, to string) error {
 			file = data.Files[i]
 		}
 	}
+	err, zip := zipFile(&file)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("zipping is done")
 	auth := smtp.PlainAuth("", data.Mail, data.Pass, "smtp.gmail.com")
-	body := addMIME(file, data.Mail, to, file.Id)
-	err := smtp.SendMail("smtp.gmail.com:587", auth, data.Mail, []string{to}, body)
+	body := addMIME(zip, data.Mail, to, file.Id)
+	err = smtp.SendMail("smtp.gmail.com:587", auth, data.Mail, []string{to}, body)
 	if err != nil {
 		fmt.Println(err)
 	}
