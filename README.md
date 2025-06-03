@@ -1,10 +1,10 @@
 # Encrypted Chunk Mailer
 
-A secure, Go-based CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail/IMAP integration.
+A secure, Go-based CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.
 
 ## Overview
 
-Encrypted Chunk Mailer enables secure file sharing through email by automatically splitting files into encrypted chunks, sending them as email attachments, and providing tools for reconstruction. This approach allows you to securely share files of any size while maintaining privacy and bypassing traditional file size limitations of email services.
+Encrypted Chunk Mailer enables secure file sharing through email by automatically splitting files into encrypted chunks, sending them as email attachments, and providing tools for reconstruction. This approach allows you to securely share files of any size and also get the file anywhere by using your gmail id like a cloud too, while maintaining privacy and bypassing traditional file size limitations of email and cloud services.
 
 ## Key Features
 
@@ -12,6 +12,7 @@ Encrypted Chunk Mailer enables secure file sharing through email by automaticall
 - **Email Integration**: Seamless Gmail support with App Password authentication
 - **Intelligent Chunking**: Automatic file splitting for optimal transmission
 - **Privacy First**: Files are unrecognizable without the decryption tool
+- **Used as Cloud**: Use your gmail id anywhere to get those chunks
 - **Cross-Platform Sharing**: Share chunks via email, messaging apps, or any platform
 
 ## Installation
