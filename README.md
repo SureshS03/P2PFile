@@ -1,92 +1,158 @@
 # Encrypted Chunk Mailer
 
-**Encrypted Chunk Mailer** is a Go-based CLI tool that allows users to **split, encrypt, send, and retrieve files via email** using MIME formatting and Gmail/IMAP integration. It is designed to support secure file sharing over common email services, with support for encryption and chunked delivery.
+A secure, Go-based CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail/IMAP integration.
 
----
+## Overview
 
-## Project Status
+Encrypted Chunk Mailer enables secure file sharing through email by automatically splitting files into encrypted chunks, sending them as email attachments, and providing tools for reconstruction. This approach allows you to securely share files of any size while maintaining privacy and bypassing traditional file size limitations of email services.
 
-> ⚠️ This project is currently under development.
+## Key Features
 
-- Attachment sending speed is being optimized.
-- Automatic retrieval of attachments from email is in progress.
-- Google Drive API integration may be introduced as an alternative to email-based delivery.
-- A `--help` flag and improved CLI UI&UX are planned.
-
----
-
-## Features
-
-- ✅ File splitting and AES-GCM encryption
-- ✅ MIME-formatted email attachments with chunked delivery
-- ✅ Optional ZIP compression for file chunks
-- ✅ IMAP-based attachment reading
-- ✅ Secure Gmail transmission using App Passwords
-
----
-
-## Prerequisites
-
-- Go 1.18 or newer
-- Enable IMAP in your Gmail settings
-- Create a [Gmail App Password](https://support.google.com/accounts/answer/185833?hl=en) if 2FA is enabled
-
----
+- **AES-GCM Encryption**: Military-grade encryption for all file chunks
+- **Email Integration**: Seamless Gmail support with App Password authentication
+- **Intelligent Chunking**: Automatic file splitting for optimal transmission
+- **Privacy First**: Files are unrecognizable without the decryption tool
+- **Cross-Platform Sharing**: Share chunks via email, messaging apps, or any platform
 
 ## Installation
 
+### Prerequisites
+
+- **Go 1.18+** - [Download Go](https://golang.org/dl/)
+- **App Password** (required if 2FA is enabled) - [Setup Guide](https://support.google.com/accounts/answer/185833?hl=en)
+
+### Setup
+
 ```bash
-git clone 
-cd encrypted-chunk-mailer
-go build
+git clone https://github.com/SureshS03/P2PFile.git
+cd P2PFile
+go build -o sender
 ```
-- Installed it at a folder. Use the sender.exe to access the tool.
+
+## Usage
+
+### Adding Files for Encryption
+
+Split and encrypt a file into secure chunks:
+
+```bash
+./sender add filename.ext
+```
+
+This command:
+- Splits the file into manageable chunks
+- Encrypts each chunk using AES-GCM
+- Stores metadata in `MetaData.json`
+- Generates a unique file ID and decryption key
+
+### Sending via Email
+
+Automatically send encrypted chunks to a recipient:
+
+```bash
+./sender push <fileID> recipient@gmail.com
+```
+
+**Recommended for:**
+- Images and documents (< 25MB)
+- Quick automated delivery
+- Trusted recipients with reliable email
+
+### Manual File Reconstruction
+
+Decrypt and reconstruct the original file:
+
+```bash
+./sender pull chunkFile1 chunkFile2 chunkFile3 <decryptionKey>
+```
+
+**Use when:**
+- Chunks were shared manually
+- Working with locally stored chunks
+
+### Clearing Metadata
+
+Reset the metadata storage:
+
+```bash
+./sender clear
+```
+
+## Workflow Examples
+
+### Scenario 1: Secure Document Sharing
+```bash
+# Encrypt a confidential document
+./sender add contract.pdf
+
+# Send to colleague via email
+./sender push <FileId> colleague@gamil.com
+
+# Colleague receives chunks and key separately
+# They reconstruct: ./sender pull chunk1 chunk2 chunk3 <key>
+```
+
+### Scenario 2: Large File via Multiple Channels
+```bash
+# Encrypt a large presentation
+./sender add presentation.pptx
+
+# Share chunks via different platforms (WhatsApp, Telegram, etc.)
+# Share decryption key through secure channel
+# Recipient reconstructs locally
+```
+
+## Security Considerations
+
+- **Key Management**: Store decryption keys separately from chunks
+- **Email Security**: Use App Passwords, never regular passwords
+- **Transmission**: Consider sharing keys through different channels than chunks
+- **Local Storage**: Securely delete original files after encryption if needed
+
+## Current Limitations & Roadmap
+
+### Known Issues
+- Email transmission speed optimization in progress
+- Large files (>50MB) may required more time
+
+### Upcoming Features
+- [ ] Automatic email attachment retrieval using IMAP
+- [ ] Google Drive API integration
+- [ ] Comprehensive `--help` documentation
+- [ ] Progress indicators and improved UX
+- [ ] Batch processing support
+
+## Configuration
+
+### Gmail Setup
+1. Generate an App Password (if 2FA enabled)
+2. Use App Password instead of regular password
+
+### Metadata Structure
+The tool maintains a `MetaData.json` file containing:
+- File IDs and original names
+- Chunk information and locations
+- Encryption metadata (keys stored separately for security)
+
+## Contributing
+
+This project welcomes contributions! Areas where help is needed:
+
+### Getting Started
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/SureshS03/P2PFile/issues)
+- **Email**: suthamani51@gmail.com
 
 ---
 
-## Commands
-
-### 1. Add a File
-```
-sender.exe add filename.ext
-```
-- Splits and encrypts the provided file into multiple chunks.
-
-- Adds the resulting file and key metadata to MetaData.json, which acts as the internal metadata store.
-
-### 2. Send Encrypted Chunks via Email
-```
-sender.exe push <fileID> recipient@example.com
-```
-- Sends the encrypted chunks as MIME attachments to the provided email address.
-
-- Note: This process may be slow for large files. Optimization or Google Drive upload support is in development.
-
-- Recommended for smaller files such as images or documents.
-
-### 3. Manually Reconstruct File from Chunks
-```
-sender.exe pull chunkFile1 chunkFile2 ... <decryptionKey>
-```
-- Decrypts and reconstructs the original file from its encrypted chunks using the provided key.
-
-- Currently a manual process—automatic retrieval is planned.
-
-### 4. Clear MetaData.json data's
-```
-sender.exe clear
-```
-- This will clear the MetaData.json file
-
-## So far What we can with this:
-- Create a chunk and manually send it to your friend. using mail or Whatsapp, or any platform you want. with the key
-- Use push command to send automatically to your friend mail id **(use smaller file like images)**
-- Make sure your private files can't see by anyone without using this tool and they don't even can know what the file it is. For example, PDF or image
-
-# Important Notes
-
-    This is the developer’s first Go project and is actively evolving.
-
-    Use caution when sharing or storing decryption keys.
-
-    Contributions, feedback, and bug reports are welcome.
+> **Security Notice**: This tool is designed for legitimate file sharing purposes. Always comply with your organization's security policies and local regulations when transmitting sensitive data.
