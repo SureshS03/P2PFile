@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -32,7 +34,6 @@ func FileAlreadyExits(data *MetaData, id *string) (int, error) {
 }
 
 func SignUp() (string, string,error) {
-	//TODO add sign up msg
 	fmt.Println("Enter Your Email :")
 	var email string
 	_, err := fmt.Scanln(&email)
@@ -41,14 +42,14 @@ func SignUp() (string, string,error) {
 		return "", "", err
 	}
 	fmt.Println("Email :", email)
+	passReader := bufio.NewReader(os.Stdin)
 	fmt.Println("Enter Your Email Password :")
-	var pass string
-	x, err := fmt.Scanln(&pass)
-	fmt.Println("Length of the password is:",x)
+	pass, err := passReader.ReadString('\n')
 	if err != nil {
-		fmt.Println("in scan", err)
+		fmt.Println("Error at reading password bro")
 		return "", "", err
 	}
+	pass = strings.TrimSpace(pass)
 	fmt.Println("Password :", pass)
 	if len(email) == 0 {
 		return "", "", errors.New("bro, Its empty")

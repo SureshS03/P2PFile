@@ -27,7 +27,6 @@ func makeKey() (cipher.AEAD, []byte, error, ) {
 		fmt.Println("error creating GCM cipher", err)
 		return nil, key, nil
 	}
-	fmt.Println("key is", len(key), "bytes long and is", key)
 	return gcm, key, nil
 }
 

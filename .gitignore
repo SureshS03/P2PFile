@@ -1,0 +1,4 @@
+# IDE/editor folders
+.vscode/
+.idea/
+*.swp

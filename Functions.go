@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"encoding/json"
 )
 
 func addFile(path string) error {
@@ -153,38 +154,42 @@ func pullFileFromMail(id string) error {
 	return nil
 }
 
-func pullFile(location string, key string) error {
-	fmt.Println("Pulling file from", location)
-	var crtKey []byte = make([]byte, 32)
-	decodedkey, err := base64.StdEncoding.DecodeString(key)
+func pullFile(chunkPaths []string, key string) error {
+	fmt.Println("Pulling and decrypting chunks:", chunkPaths)
+
+	crtKey := make([]byte, 32)
+	decodedKey, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
-		fmt.Println("Bro, cant decode the key", err)
-		return fmt.Errorf("bro, cant decode the key %s", err)
+		return fmt.Errorf("bro, can't decode the key: %w", err)
 	}
-	copy(crtKey, decodedkey)
-	if len(crtKey) != 32 {
-		fmt.Println("Bro, key is not 32 bytes long")
-		return fmt.Errorf("bro, key is not 32 bytes long %d", len(crtKey))
+	if len(decodedKey) != 32 {
+		return fmt.Errorf("bro, key is not 32 bytes long: %d", len(decodedKey))
 	}
+	copy(crtKey, decodedKey)
+
+	fmt.Print("Enter the final file name with extension to save: ")
 	var fileName string
-	fmt.Println("Enter the file name with correct extension to save the decrypted file:")
 	_, err = fmt.Scanf("%s", &fileName)
 	if err != nil {
-		fmt.Println("Bro, cant read the file name", err)
-		return fmt.Errorf("bro, cant read the file name %s", err)
+		return fmt.Errorf("bro, can't read file name: %w", err)
 	}
-	dectxt := makeDec(crtKey, location)
-	file, err := os.Create(fileName)
+
+	outFile, err := os.Create(fileName)
 	if err != nil {
-		fmt.Println("Bro, cant create the file", err)
-		return fmt.Errorf("bro, cant create the file %s", err)
+		return fmt.Errorf("bro, can't create file: %w", err)
 	}
-	_, err = file.Write(dectxt)
-	if err != nil {
-		fmt.Println("Bro, cant write the file", err)
-		return fmt.Errorf("bro, cant write the file %s", err)
+	defer outFile.Close()
+
+	for _, path := range chunkPaths {
+		fmt.Println("Decrypting:", path)
+		decrypted := makeDec(crtKey, path)
+		_, err := outFile.Write(decrypted)
+		if err != nil {
+			return fmt.Errorf("bro, can't write decrypted chunk: %w", err)
+		}
 	}
-	fmt.Println("File decrypted successfully")
+
+	fmt.Println("Successfully decrypted and combined into:", fileName)
 	return nil
 }
 
@@ -228,5 +233,28 @@ func sendMail(id *string, data *MetaData, to string) error {
 		fmt.Println(err)
 	}
 	fmt.Println("done")
+	return nil
+}
+
+
+func ClearMetaDataFile(path string) error {
+	empty := MetaData{
+		Mail:       "",
+		Pass:   "",
+		NumOfFiles: 0,
+		Files:      []FileMetaData{},
+	}
+
+	data, err := json.MarshalIndent(empty, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal empty metadata: %v", err)
+	}
+
+	err = os.WriteFile(path, data, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write metadata file: %v", err)
+	}
+
+	fmt.Println("MetaData.json has been cleared.")
 	return nil
 }
