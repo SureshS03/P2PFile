@@ -1,3 +1,71 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+
+# Build output directory
+/build/
+/bin/
+/dist/
+
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Go module download cache
+# Uncomment if you want to ignore the module cache
+# $GOPATH/pkg/mod/
+
+# Air live reload tool
+tmp/
+
+# Delve debugger
+__debug_bin
+
+# GoLand
+.idea/
