@@ -36,14 +36,19 @@
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/encrypted-chunk-mailer.git
+git clone 
 cd encrypted-chunk-mailer
 go build
 ```
-## Usage
+- Installed it at a folder. Use the sender.exe to access the tool.
+
+---
+
+## Commands
+
 ### 1. Add a File
 ```
-go run . add filename.ext
+sender.exe add filename.ext
 ```
 - Splits and encrypts the provided file into multiple chunks.
 
@@ -51,7 +56,7 @@ go run . add filename.ext
 
 ### 2. Send Encrypted Chunks via Email
 ```
-go run . push <fileID> recipient@example.com
+sender.exe push <fileID> recipient@example.com
 ```
 - Sends the encrypted chunks as MIME attachments to the provided email address.
 
@@ -61,11 +66,22 @@ go run . push <fileID> recipient@example.com
 
 ### 3. Manually Reconstruct File from Chunks
 ```
-go run . pull chunkFile1 chunkFile2 ... <decryptionKey>
+sender.exe pull chunkFile1 chunkFile2 ... <decryptionKey>
 ```
 - Decrypts and reconstructs the original file from its encrypted chunks using the provided key.
 
 - Currently a manual process—automatic retrieval is planned.
+
+### 4. Clear MetaData.json data's
+```
+sender.exe clear
+```
+- This will clear the MetaData.json file
+
+## So far What we can with this:
+- Create a chunk and manually send it to your friend. using mail or Whatsapp, or any platform you want. with the key
+- Use push command to send automatically to your friend mail id **(use smaller file like images)**
+- Make sure your private files can't see by anyone without using this tool and they don't even can know what the file it is. For example, PDF or image
 
 # Important Notes
 
