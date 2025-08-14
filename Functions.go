@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -206,7 +207,7 @@ func pushFile(id string, to string) error {
 		fmt.Println(err)
 		return err
 	}
-	err = sendMail(&id, &metadata, to)
+	err = newMailSending(&id, &metadata, to)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -235,6 +236,61 @@ func sendMail(id *string, data *MetaData, to string) error {
 	fmt.Println("done")
 	return nil
 }
+
+func newMailSending(id *string, data *MetaData, to string) error {
+    fmt.Println(*id)
+    if data.Mail == "" {
+        SignUp()
+    }
+    fmt.Println(data.Mail, data.Pass)
+
+    var file FileMetaData
+    for _, f := range data.Files {
+        if f.Id == *id {
+            file = f
+            break
+        }
+    }
+
+    c, err := smtp.Dial("smtp.gmail.com:587")
+    if err != nil {
+        return fmt.Errorf("err in dial connection %v", err)
+    }
+    defer c.Close()
+
+    if err = c.StartTLS(&tls.Config{ServerName: "smtp.gmail.com"}); err != nil {
+        return fmt.Errorf("err in starttls %v", err)
+    }
+
+    auth := smtp.PlainAuth("", data.Mail, data.Pass, "smtp.gmail.com")
+    if err = c.Auth(auth); err != nil {
+        return fmt.Errorf("err in auth %v", err)
+    }
+
+    if err = c.Mail(data.Mail); err != nil {
+        return fmt.Errorf("err in mail %v", err)
+    }
+    if err = c.Rcpt(to); err != nil {
+        return fmt.Errorf("err in rcpt %v", err)
+    }
+
+    w, err := c.Data()
+    if err != nil {
+        return fmt.Errorf("err in create mail writer %v", err)
+    }
+
+    body := addMIME(file, data.Mail, to, file.Id)
+    if _, err = w.Write(body); err != nil {
+        return fmt.Errorf("err in writing the body %v", err)
+    }
+
+    if err = w.Close(); err != nil {
+        return fmt.Errorf("err closing writer %v", err)
+    }
+
+    return nil
+}
+
 
 
 func ClearMetaDataFile(path string) error {
