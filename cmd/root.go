@@ -36,18 +36,31 @@ var add = &cobra.Command{
 	//DisableFlagParsing: true,
 }
 
+//Yuvaraj work on Push command
+var push = &cobra.Command{}
+
+var pull = &cobra.Command{
+
+}
+
 var reset = &cobra.Command{
 	Use: "reset",
 	Short: "This will clear the all data in MetaData.json (which is database of your history)",
 	SuggestFor: []string{"p2p reset"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fn.ClearMetaDataFile("MetaData.json")
+		err := fn.ClearMetaDataFile("MetaData.json")
+		if err != nil {
+			fn.ErrPrinter(err)
+			os.Exit(1)
+		}
 	},
 }
 
 func Exe() {
 	root.AddCommand(add)
 	root.AddCommand(reset)
+	root.AddCommand(push)
+	root.AddCommand(pull)
 	err := root.Execute()
 	if err != nil {
 		fn.ErrPrinter(err)
