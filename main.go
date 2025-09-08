@@ -1,12 +1,12 @@
 package main
 
 import (
-	//"crypto/sha256"
-	"fmt"
-	"os"
+	"P2PMail/cmd"
 )
 
 func main() {
+	cmd.Exe()
+	/*
 	//splitFile("test.mp4")
 	args := os.Args
 	//fmt.Println(args[1])
@@ -46,5 +46,5 @@ func main() {
 	case "clear":
 		ClearMetaDataFile("MetaData.json")
 	}
-
+	*/
 }
