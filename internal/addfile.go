@@ -119,6 +119,6 @@ func AddFile(path string) error {
 	if err != nil {
 		fmt.Println("Bro cant add Metadata details:", err)
 	}
-	CrrPrinter("File encrypted successfully\nUse push command to push the files")
+	CrrPrinter("File encrypted successfully\nFile Id is " + fileID + "\nUse push command to push the files")
 	return nil
 }
