@@ -15,6 +15,7 @@ type MetaData struct {
 type FileMetaData struct {
 	Id          string          `json:"id"`
 	FileName    string          `json:"FileName"`
+	FilePath	string			`json:"FilePath"`
 	TotalSize   string          `json:"TotalSize"`
 	NumOfChunks int64           `json:"NumOfChunks"`
 	Key         []byte          `json:"Key"`
