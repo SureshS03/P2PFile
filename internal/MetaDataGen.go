@@ -50,6 +50,6 @@ func ClearMetaDataFile(path string) error {
 		return fmt.Errorf("failed to write metadata file: %v", err)
 	}
 
-	fmt.Println("MetaData.json has been cleared.")
+	CrrPrinter("MetaData.json has been cleared.")
 	return nil
 }
