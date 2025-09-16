@@ -34,12 +34,20 @@ func fileAlreadyExits(data *MetaData, id *string) (int, error) {
 	return 0, nil
 }
 
-func signUp() (string, string,error) {
+func signUp() (string, string, error) {
+	fmt.Printf("Welcome to...\n" + ` ____  ____  ____ 
+(  _ \(___ \(  _ \
+ ) __/ / __/ ) __/
+(__)  (____)(__)  
+` + "\n")
 	fmt.Println("Enter Your Email :")
 	var email string
 	_, err := fmt.Scanln(&email)
 	if err != nil {
-		fmt.Println("in scan", err)
+		return "", "", errors.New("error in reading mail")
+	}
+	err = IsValidMail(email)
+	if err != nil {
 		return "", "", err
 	}
 	CrrPrinter("Email :" + email)
@@ -48,24 +56,28 @@ func signUp() (string, string,error) {
 	pass, err := passReader.ReadString('\n')
 	if err != nil {
 		return "", "", fmt.Errorf("error at reading password bro")
-
 	}
 	pass = strings.TrimSpace(pass)
 	CrrColorString("Password :"+ pass)
-	if len(email) == 0 {
-		return "", "", errors.New("bro, Its empty")
+	err = JsonWriter("MetaData.json", MetaData{
+		NumOfFiles: 0,
+	})
+	if err != nil {
+		return "", "", err
 	}
-	if !strings.Contains(email, "@") {
-		return "", "", errors.New("bro, Its dont have @ in it")
-	} else if !strings.Contains(email, ".") {
-		return "", "", errors.New("bro, Its not an vaild email")
-	} else {
-		err := JsonWriter("MetaData.json", MetaData{
-			NumOfFiles: 0,
-		})
-		if err != nil {
-			return "", "", err
-		}
-		return email, pass, nil
+	return email, pass, nil
+}
+
+func IsValidMail(mail string) error {
+	if len(mail) == 0 {
+		return errors.New("bro, mail is empty\nPlease Enter vaild mail")
 	}
+	if !strings.Contains(mail, "@") {
+		return errors.New("bro, mail dont have @ in it\nPlease Enter vaild mail")
+	}
+	if !strings.Contains(mail, ".") {
+		return errors.New("bro, mail not an vaild email\nPlease Enter vaild mail")
+	}
+
+	return nil
 }
