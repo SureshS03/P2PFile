@@ -64,6 +64,7 @@ func AddFile(path string) error {
 	defaultName := filepath.Base(path)
 	fileExt := filepath.Ext(path)
 	Name := defaultName[:len(defaultName)-len(fileExt)]
+	filePath := filepath.Dir(path)
 
 	gcm, key, err := makeKey()
 	if err != nil {
@@ -87,7 +88,7 @@ func AddFile(path string) error {
 		hash := sha256.New()
 		hash.Write([]byte(text))
 		//fmt.Println(hash.Sum(nil))
-		partFile, err := os.Create(fileNamer)
+		partFile, err := os.Create(filePath+"/"+fileNamer)
 		if err != nil {
 			return errors.New(fmt.Sprint("Bro, cant create the file chunks:", err))
 		}
@@ -106,6 +107,7 @@ func AddFile(path string) error {
 	filemetadata := FileMetaData{
 		Id:          fileID,
 		FileName:    fileName,
+		FilePath:	 filePath,
 		TotalSize:   fmt.Sprintf("%d MB", fileSize/1024/1024),
 		NumOfChunks: needChunks,
 		Key:         key,
@@ -117,6 +119,6 @@ func AddFile(path string) error {
 	if err != nil {
 		fmt.Println("Bro cant add Metadata details:", err)
 	}
-	CrrPrinter("File encrypted successfully\nUse push command to push the files")
+	CrrPrinter("File encrypted successfully\nFile Id is " + fileID + "\nUse push command to push the files")
 	return nil
 }

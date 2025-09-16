@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func addMIME(filedata FileMetaData, from string, to string, sub string) []byte {
+func addMIME(filedata FileMetaData, from string, to string, sub string) ([]byte, error) {
 	var body bytes.Buffer
 	boundary := "MyBoundary"
 
@@ -25,6 +25,7 @@ func addMIME(filedata FileMetaData, from string, to string, sub string) []byte {
 	body.WriteString("This is the Encrypted file chunks, use tool to pull and combine.\r\n")
 
 	for i := 0; i < len(filedata.Chunks); i++ {
+		path := filedata.FilePath
 		chunkName := filedata.Chunks[i].ChunkName
 
 		body.WriteString("--" + boundary + "\r\n")
@@ -33,15 +34,15 @@ func addMIME(filedata FileMetaData, from string, to string, sub string) []byte {
 		body.WriteString("Content-Disposition: attachment; filename=\"" + chunkName + "\"\r\n")
 		body.WriteString("\r\n")
 
-		c, err := os.ReadFile(chunkName)
+		c, err := os.ReadFile(path + "/" + chunkName)
 		if err != nil {
 			fmt.Println("error reading chunk:", err)
-			return nil
+			return nil, err
 		}
 		encoded64 := base64.StdEncoding.EncodeToString(c)
 		body.WriteString(encoded64 + "\r\n")
 	}
 
 	body.WriteString("--" + boundary + "--\r\n")
-	return body.Bytes()
+	return body.Bytes(), nil
 }

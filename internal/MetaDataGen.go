@@ -15,6 +15,7 @@ type MetaData struct {
 type FileMetaData struct {
 	Id          string          `json:"id"`
 	FileName    string          `json:"FileName"`
+	FilePath	string			`json:"FilePath"`
 	TotalSize   string          `json:"TotalSize"`
 	NumOfChunks int64           `json:"NumOfChunks"`
 	Key         []byte          `json:"Key"`
@@ -49,6 +50,6 @@ func ClearMetaDataFile(path string) error {
 		return fmt.Errorf("failed to write metadata file: %v", err)
 	}
 
-	fmt.Println("MetaData.json has been cleared.")
+	CrrPrinter("MetaData.json has been cleared.")
 	return nil
 }
