@@ -2,7 +2,6 @@ package cmd
 
 import (
 	fn "P2PMail/internal"
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -11,7 +10,11 @@ import (
 //trying bu using Cobra
 var root = &cobra.Command{
 	Use: "p2p",
-	Long: "A CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.",
+	Long: ` ____  ____  ____ 
+(  _ \(___ \(  _ \
+ ) __/ / __/ ) __/
+(__)  (____)(__)  
+` + "\nA CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.",
 	Short: "A CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.",
 	Aliases: []string{"mail", "ptop"},
 	Args: cobra.ExactArgs(1),
@@ -22,11 +25,6 @@ var add = &cobra.Command{
 	Short: "Create a Encryted chucks of the given file and store it in MetaData",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			msg := "Can't have more the one file bruh..."
-			fn.ErrPrinter(fmt.Errorf("%s", msg))
-			os.Exit(1)
-		}
 		err := fn.AddFile(args[0])
 		if err != nil {
 			fn.ErrPrinter(err)
@@ -37,7 +35,22 @@ var add = &cobra.Command{
 }
 
 //Yuvaraj work on Push command
-var push = &cobra.Command{}
+var push = &cobra.Command{
+	Use: "push [id] [to]",
+	Short: "To push the file to others via mail (any mail servies)",
+	Args: cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		err := fn.IsValidMail(args[1]); if err != nil {
+			fn.ErrPrinter(err)
+			os.Exit(1)
+		}
+		err = fn.PushFile(args[0], args[1])
+		if err != nil {
+			fn.ErrPrinter(err)
+			os.Exit(1)
+		}
+	},
+}
 
 var pull = &cobra.Command{
 
@@ -47,6 +60,7 @@ var reset = &cobra.Command{
 	Use: "reset",
 	Short: "This will clear the all data in MetaData.json (which is database of your history)",
 	SuggestFor: []string{"p2p reset"},
+	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		err := fn.ClearMetaDataFile("MetaData.json")
 		if err != nil {
