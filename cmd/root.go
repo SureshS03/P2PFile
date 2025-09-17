@@ -59,9 +59,19 @@ var push = &cobra.Command{
 		}
 	},
 }
-
+//manual pull
 var pull = &cobra.Command{
-
+	Use: "pull [path] [key]",
+	Short: "To Pull file from mail and Combine it",
+	Run: func(cmd *cobra.Command, args []string)  {
+		key := args[len(args) - 1]
+		paths := args[0 : len(args)-1]
+		err := fn.PullFile(paths, key)
+		if err != nil{
+			fn.ErrPrinter(err)
+			os.Exit(1)
+		}
+	},
 }
 
 var reset = &cobra.Command{
