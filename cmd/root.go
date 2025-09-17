@@ -10,11 +10,19 @@ import (
 //trying bu using Cobra
 var root = &cobra.Command{
 	Use: "p2p",
-	Long: ` ____  ____  ____ 
-(  _ \(___ \(  _ \
- ) __/ / __/ ) __/
-(__)  (____)(__)  
-` + "\nA CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.",
+	Long: `/**
+ *     ███████████   ████████  ███████████    
+ *    ▒▒███▒▒▒▒▒███ ███▒▒▒▒███▒▒███▒▒▒▒▒███   
+ *     ▒███    ▒███▒▒▒    ▒███ ▒███    ▒███   
+ *     ▒██████████    ███████  ▒██████████    
+ *     ▒███▒▒▒▒▒▒    ███▒▒▒▒   ▒███▒▒▒▒▒▒     
+ *     ▒███         ███      █ ▒███           
+ *     █████       ▒██████████ █████          
+ *    ▒▒▒▒▒        ▒▒▒▒▒▒▒▒▒▒ ▒▒▒▒▒           
+ *                                            
+ *                                            
+ *                                            
+ */` + "\nA CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.",
 	Short: "A CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.",
 	Aliases: []string{"mail", "ptop"},
 	Args: cobra.ExactArgs(1),
