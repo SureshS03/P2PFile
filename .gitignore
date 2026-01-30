@@ -71,3 +71,6 @@ __debug_bin
 .idea/
 
 **/.git/
+
+#cred.json
+env/
