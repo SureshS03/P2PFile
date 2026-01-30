@@ -61,3 +61,8 @@ func PullFile(chunkPaths []string, key string) error {
 	fmt.Println("Successfully decrypted and combined into:", fileName)
 	return nil
 }
+
+func Autopull(id, key string) error {
+	fmt.Println(id, key)
+	return nil
+}
