@@ -57,11 +57,27 @@ var push = &cobra.Command{
 var pull = &cobra.Command{
 	Use: "pull [path] [key]",
 	Short: "To Pull file from mail and Combine it",
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string)  {
 		key := args[len(args) - 1]
 		paths := args[0 : len(args)-1]
 		err := fn.PullFile(paths, key)
 		if err != nil{
+			fn.ErrPrinter(err)
+			os.Exit(1)
+		}
+	},
+}
+
+var auto_pull = &cobra.Command{
+	Use: "auto_pull [id] [key]",
+	Short: "To Pull file from mail via API and merge it",
+	Args: cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		key := args[len(args) - 1]
+		id := args[len(args) - 2]
+		err := fn.Autopull(id, key)
+		if err != nil {
 			fn.ErrPrinter(err)
 			os.Exit(1)
 		}
@@ -87,6 +103,7 @@ func Exe() {
 	root.AddCommand(reset)
 	root.AddCommand(push)
 	root.AddCommand(pull)
+	//root.AddCommand(auto_pull)
 	err := root.Execute()
 	if err != nil {
 		fn.ErrPrinter(err)
