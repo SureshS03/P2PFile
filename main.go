@@ -1,5 +1,7 @@
 package main
 
+//TODO auto pull, suriya API, Filter
+
 import (
 	"P2PMail/cmd"
 )
