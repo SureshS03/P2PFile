@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"encoding/json"
 )
 
 func isFileExits(data *MetaData, id *string) error {
@@ -35,11 +36,13 @@ func fileAlreadyExits(data *MetaData, id *string) (int, error) {
 }
 
 func signUp() (string, string, error) {
-	fmt.Printf("Welcome to...\n" + ` ____  ____  ____ 
-(  _ \(___ \(  _ \
- ) __/ / __/ ) __/
-(__)  (____)(__)  
-` + "\n")
+	fmt.Printf("\n" + `//    ███████╗ ██████╗███╗   ███╗
+//    ██╔════╝██╔════╝████╗ ████║
+//    █████╗  ██║     ██╔████╔██║
+//    ██╔══╝  ██║     ██║╚██╔╝██║
+//    ███████╗╚██████╗██║ ╚═╝ ██║
+//    ╚══════╝ ╚═════╝╚═╝     ╚═╝
+//                               ` + "\nA CLI tool for splitting, encrypting, and transmitting files via email with MIME formatting and Gmail integration.")
 	fmt.Println("Enter Your Email :")
 	var email string
 	_, err := fmt.Scanln(&email)
@@ -66,6 +69,29 @@ func signUp() (string, string, error) {
 		return "", "", err
 	}
 	return email, pass, nil
+}
+
+func Logout(path string) error {
+	md, err := getMetaData("MetaData.Json")
+	empty := MetaData{
+		Mail:   "",
+		Pass:   "",
+		NumOfFiles: md.NumOfFiles,
+		Files:      md.Files,
+	}
+
+	data, err := json.MarshalIndent(empty, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to logout from metadata: %v", err)
+	}
+
+	err = os.WriteFile(path, data, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to logout(writing) : %v", err)
+	}
+
+	CrrPrinter("Logout Successfully.")
+	return nil
 }
 
 func IsValidMail(mail string) error {
