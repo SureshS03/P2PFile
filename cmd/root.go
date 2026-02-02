@@ -116,7 +116,7 @@ func Exe() {
 	root.AddCommand(reset)
 	root.AddCommand(push)
 	root.AddCommand(pull)
-	//root.AddCommand(auto_pull)
+	root.AddCommand(auto_pull)
 	err := root.Execute()
 	if err != nil {
 		fn.ErrPrinter(err)
