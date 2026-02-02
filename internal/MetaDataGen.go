@@ -33,9 +33,10 @@ func (x FileMetaData) GetNumOfChunks() int {
 }
 
 func ClearMetaDataFile(path string) error {
+	md, err := getMetaData("MetaData.Json")
 	empty := MetaData{
-		Mail:       "",
-		Pass:   "",
+		Mail:   md.Mail,
+		Pass:   md.Pass,
 		NumOfFiles: 0,
 		Files:      []FileMetaData{},
 	}
