@@ -98,6 +98,19 @@ var reset = &cobra.Command{
 	},
 }
 
+var logout = &cobra.Command{
+	Use: "logout",
+	Short: "Logout, Remove mail and password from DB and create to sign in again to use application",
+	Args: cobra.ExactArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		err := fn.Logout("MetaData.json")
+		if err != nil {
+			fn.ErrPrinter(err)
+			os.Exit(1)
+		}
+	},
+}
+
 func Exe() {
 	root.AddCommand(add)
 	root.AddCommand(reset)
