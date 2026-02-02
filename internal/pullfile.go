@@ -64,5 +64,9 @@ func PullFile(chunkPaths []string, key string) error {
 
 func Autopull(id, key string) error {
 	fmt.Println(id, key)
+	err := OAuth()
+	if err != nil {
+		return nil
+	}
 	return nil
 }
