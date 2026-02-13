@@ -67,7 +67,7 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 
 func OAuth() error {
 	ctx := context.Background()
-	b, err := os.ReadFile("env/credentials..json")
+	b, err := os.ReadFile("env/credentials.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 		return err
@@ -86,26 +86,36 @@ func OAuth() error {
 	}
 
 	fmt.Println(srv.Users)
+	res, err := getMailsBySubject(srv, "subject:Mail.pngchu185752")
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(res)
+
 	return nil
 }
 
 
-func Filter(id string) {
-	filterquery := gmail.FilterCriteria{
-		Subject: id,
-	}
+func getMailsBySubject(srv *gmail.Service, subject string) ([]*gmail.Message, error) {
 
-	filter := gmail.Filter{
-		Id: "subject-filter",
-		Criteria: &filterquery,
-	}
+	user := "me" // authenticated user
+	query := fmt.Sprintf("subject:%s", subject)
 
-	x, err := filter.MarshalJSON()
+	resp, err := srv.Users.Messages.List(user).
+		Q(query).
+		MaxResults(10).
+		Do()
+
 	if err != nil {
-		fmt.Println(err)
-		return
+		return nil, err
 	}
 
-	fmt.Println(x)
+	return resp.Messages, nil
+}
 
+func getMessage(srv *gmail.Service, msgID string) (*gmail.Message, error) {
+	return srv.Users.Messages.Get("me", msgID).
+		Format("full").
+		Do()
 }
