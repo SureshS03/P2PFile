@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-// this will fetch the chuck file from the mail and decrypt it
 func PullFileFromMail(id string) error {
 	metadata, err := getMetaData("MetaData.json")
 	if err != nil {
@@ -58,15 +57,22 @@ func PullFile(chunkPaths []string, key string) error {
 		}
 	}
 
-	fmt.Println("Successfully decrypted and combined into:", fileName)
+	CrrPrinter("Successfully decrypted and combined into:" + fileName)
 	return nil
 }
 
-func Autopull(id, key string) error {
-	fmt.Println(id, key)
-	err := OAuth()
+func AutoPull(id, key string) error {
+	srv, err := OAuth()
 	if err != nil {
-		return nil
+		fmt.Println(err)
+		return err
 	}
+	paths, err := ReadMailAndDownloadAttachments(srv, id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	fmt.Println("done downloads")
+	err = PullFile(paths, key)
 	return nil
 }
