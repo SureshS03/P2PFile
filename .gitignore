@@ -74,3 +74,6 @@ __debug_bin
 
 #cred.json
 env/
+
+#attachments
+attachments/
