@@ -76,7 +76,7 @@ var auto_pull = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		key := args[len(args) - 1]
 		id := args[len(args) - 2]
-		err := fn.Autopull(id, key)
+		err := fn.AutoPull(id, key)
 		if err != nil {
 			fn.ErrPrinter(err)
 			os.Exit(1)
