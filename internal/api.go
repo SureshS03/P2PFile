@@ -181,7 +181,6 @@ func downloadAttachments(
 	walkParts = func(parts []*gmail.MessagePart) error {
 		for _, part := range parts {
 
-			// Attachment found
 			if part.Filename != "" && part.Body != nil && part.Body.AttachmentId != "" {
 
 				att, err := srv.Users.Messages.Attachments.
@@ -204,7 +203,6 @@ func downloadAttachments(
 				savedPaths = append(savedPaths, filePath)
 			}
 
-			// Nested parts (VERY IMPORTANT)
 			if len(part.Parts) > 0 {
 				if err := walkParts(part.Parts); err != nil {
 					return err
