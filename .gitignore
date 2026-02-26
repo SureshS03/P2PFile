@@ -77,3 +77,6 @@ env/
 
 #attachments
 attachments/
+
+#chucks
+*.chu
